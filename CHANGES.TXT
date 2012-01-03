@@ -11,6 +11,12 @@ is no set schedule for releases.
    +	Consider adding LDAP file support.
 
 
+--1.6--
+
+   *	Requires LibSnert 1.75.8
+
+   !	Configure and build changes to reflect changes in libsnert.
+
 --1.5--
 
    !	sample.mc.in: Removed from define(`_FFR_MILTER', `1')dnl
