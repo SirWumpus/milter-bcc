@@ -1,0 +1,246 @@
+CHANGES
+-------
+
+The major number changes for such things as code rewrites, changes in
+syntax, and/or dramatic changes in functionality. The minor number
+changes for corrections, enhancements, etc. made to the code. There
+is no set schedule for releases.
+
+--TODO--
+
+   +	Consider adding LDAP file support.
+
+
+--1.5--
+
+   !	sample.mc.in: Removed from define(`_FFR_MILTER', `1')dnl
+
+--1.4--
+
+   *	Has been proven to work with Postix 2.3. Thanks to Jan Ahrens.
+
+   -	Dropped adding of informational header X-Scanned-By when mail is
+	BCCed to one or more recipients. Plus this header relies on
+	{if_addr} macro, which Postfix 2.3 has no equivalent.
+
+--1.3--
+
+   +	Requires LibSnert 1.63.
+
+   !	Documentation corrections and updates for access-db.
+
+   +	access-db now supports socket-map, flat-file, and SQLite3
+	lookups in addition to Berkeley DB. The SQLite3 behaviour
+	can be disabled via LibSnert's ./configure script.
+
+   +	Added milter-bcc-connect: default tag, which handles all the
+	usual lookups and allows for a default Bcc "for all
+	connections". Requested by Andoni Auzmendi.
+
+   +	Added milter-bcc-from:, milter-bcc-to:, and milter-bcc-all
+   	default tags for consistency with milter-bcc-connect.
+
+   +	Added support for SKIP action in place of the format list. The
+	SKIP halts the access.db lookup resulting in no Bcc address
+	being added. Requested by Andoni Auzmendi. This was already
+	possible by simply specifying an empty format list. Adding
+	SKIP just makes it clearer.
+
+   !	milter-bcc-auth: is now applied _before_ testing for the null
+	sender, since it's possible to send authenticated DSN or MDN
+	messages.
+
+--1.2--
+
+  !!	License 1.4 which provides additional details with regards to
+  	possible license controls used, the possibility of "phone
+  	home code" and its general contents, and related privacy
+  	statement.
+
+   +	Add check for filterOpen() got NULL socket address pointer
+	passed to filterOpen() which inidicates an unsupported address
+	type. The connection is simply accepted to bypass the milter.
+
+--1.1--
+
+   +	Requires LibSnert 1.61.
+
+  !!	Complete replacement of option specification and no backwards.
+	compatibility. The newer format allows for better integration
+	of previously undocumented libsnert options and for the
+	inclusion of future enhancements.
+
+   !	filterClose(): remove reporting of "null workspace error",
+	which can occur when a client connection is rejected before or
+	by filterOpen().
+
+   !	Minor corrections for gcc -Wall warnings.
+
+--1.0--
+
+   !	Reverted back to libmilter's default (7210s) timeout. This
+	should silence many of the reported sendmail to milter timeout
+	errors and/or broken connections caused by the milter timing
+	out sooner than sendmail does with the current SMTP client.
+	The sendmail defaults for each SMTP command and receiving the
+	message content is 1h each and so libmilter allows for 2h 10s.
+	But in theory you could be DoS for between 5 and 104 hours per
+	connection. If you want to change this then set in
+	sendmail.mc:
+
+		define(`confTO_DATABLOCK',      `30m')
+		define(`confTO_COMMAND',        `5m')
+
+--0.12--
+
+   !	Replaced use of LIBSNERT_WITH_BERKELEY_DB by HAVE_DB_H due to
+   	changes in LibSnert/1.59.
+
+--0.11--
+
+   +	Requires LibSnert 1.57
+
+   +	Added support for
+
+   		milter-bcc-auth:auth_authen		RHS
+   		milter-bcc-auth:			RHS
+
+--0.10--
+
+   +	Requires LibSnert 1.56
+
+   !	Changed install.sh.in to create /var/run/mitler/ directory
+   	owned by milter:milter and change the default PID_FILE and
+   	SOCKET_FILE paths. This provides better privelage/security
+   	separation since the milters run as milter:milter.
+
+--0.9--
+
+   +	Requires LibSnert 1.53
+
+   +	Add support for milter-bcc-connect: tag. Requested by Alexc.
+
+   !	Fixed potential memory leak in filterMail() and filterRcpt()
+	not free'ing the previously allocated access DB value string
+	in the event of an error from addBccRecipient().
+
+   +	The format-path can now be a comma separated list of format-
+	path strings.
+
+--0.8--
+
+   +	Requires LibSnert 1.45
+
+   -	Remove use smdbReload(). This function was removed in libsnert-1.45.
+
+--0.7--
+
+   +	Requires LibSnert 1.41
+
+   !	Fixed configure.in script to better handle Berkeley DB library
+   	and header searches. All these cases should now work.
+
+   		./configure
+   		./configure --with-db
+   		./configure --with-db=/usr/local/BerkeleyDB-4.2
+   		./configure --without-db
+
+   -	configure.in: Removed gcc option -fvolatile, which is no longer
+   	supported in as of gcc 3.4.
+
+   +	The milter now starts as a background process and can kill a
+	previous instance of itself using the -x option. The -X option
+	is undocumented, but starts the application as a foreground
+	process for the purpose of debugging.
+
+   +	Added support for a /etc/mail/milter-name.cf file that can
+   	contain command-line options and an optional socket argument.
+
+   !	The socket argument is now optional.
+
+   !	The above three changes allow for a simplified startup script
+	template for use by all my milters.
+
+   !	Fix possible memory leak on out-of-memory errors. Rare.
+
+   +	The right-hand-side of a milter-bcc-* tagged value is now
+   	specified as a general purpose formatted path. Requested by
+   	Michael Zakharoff.
+
+   !	MAIL FROM:<> is now skipped. It makes no sense to look it up
+	and Bcc someone all the bounce messages.
+
+   !	Fixed bug where X-Scanned-By header was not being added.
+
+  !!	Updated LICENSE.TXT.
+
+--0.6--
+
+   +	Requires LibSnert 1.39
+
+   !	Status changed from alpha to beta.
+
+   !	Fixed the configuration file to recognise OpenBSD. Reported by
+	Francisco of Blackant dot Net.
+
+   !	Fixed the start-up script to unalias shell function names
+	before defining the function. Reported by Francisco of
+	Blackant dot Net.
+
+--0.5--
+
+   +	Requires LibSnert 1.38
+
+   +	Bumped version to clearly indicate a new version after some
+	people got hold of pre-release work in progress.
+
+--0.4--
+
+   +	Requires LibSnert 1.37
+
+   +	Add VERSION.TXT to configuration for use by sendmail.shtml.
+
+   !	Fix makefile ownership target to assert correct state directory
+   	permissions.
+
+   !	atExitCleanUp() now calls smdbClose() which mutex protects the
+   	call to db->close(). For the access database this is not so
+   	important, but it clearer code.
+
+
+--0.3--
+
+   +	Requires LibSnert 1.36
+
+   +	Set working directory to the state directory, where is can write
+   	a core file in the event of crash.
+
+   !	nullWorkSpace() now takes a `where' string to report in what hook
+   	it failed.
+
+   !	Replaced some commom code shared by all my milters. See libsnert
+   	Sendmail Filter API (smf).
+
+   !	Standardised the -v option across all my milters. Also support
+   	textual bit names.
+
+   ! 	Modified license.
+
+--0.2--
+
+   +	Requires LibSnert 1.35 for major smdb() update to solve threading
+   	issues and a possible memory corruption problem
+
+   +	Add an instanceCount for independent tagging of log message separate
+   	from the queue id.
+
+   +	Berkeley DB support is assumed and required at this time.
+
+   !	vSetReply() not checks for an MI_FAILURE from smfi_setreply().
+
+--0.1--
+
+   +	Requires LibSnert 1.34.
+
+
+
