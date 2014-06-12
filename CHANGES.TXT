@@ -11,6 +11,16 @@ is no set schedule for releases.
    +	Consider adding LDAP file support.
 
 
+--1.6.2--
+
+   !	Fix incorrect attempt to add SKIP as a Bcc address.
+
+   +	Added SKIPALL action word. Requested by Philippe Marrot.
+
+--1.6.1--
+
+   !	Minor configure.in change WRT Libsnert.
+
 --1.6--
 
    *	Requires LibSnert 1.75.8

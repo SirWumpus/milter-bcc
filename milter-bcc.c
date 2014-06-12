@@ -101,8 +101,13 @@
  *** Global Variables
  ***********************************************************************/
 
+#define FLAG_SKIPALL_CONNECT			0x1
+#define FLAG_SKIPALL_MESSAGE			0x2
+#define FLAG_SKIPALL_ANY			(FLAG_SKIPALL_CONNECT|FLAG_SKIPALL_MESSAGE)
+
 typedef struct {
 	smfWork work;
+	int flags;
 	Vector addRcpts;			/* per message */
 	long addRcptsConnect;			/* per connection */
 	char line[SMTP_TEXT_LINE_LENGTH+1];	/* general purpose */
@@ -159,8 +164,14 @@ addBccRecipient(workspace data, char *rhs, ParsePath *path)
 		goto error0;
 	}
 
-	if (rhs == NULL || *rhs == '\0') {
+	if (rhs == NULL || *rhs == '\0' || (data->flags & FLAG_SKIPALL_ANY) != 0 || strcmp(rhs, "SKIP") == 0) {
 		/* No fmt found after pattern match, skip. */
+		rc = SMFIS_CONTINUE;
+		goto error0;
+	}
+
+	if (strcmp(rhs, "SKIPALL") == 0) {
+		data->flags |= FLAG_SKIPALL_MESSAGE;
 		rc = SMFIS_CONTINUE;
 		goto error0;
 	}
@@ -275,6 +286,11 @@ filterOpen(SMFICTX *ctx, char *client_name, _SOCK_ADDR *raw_client_addr)
 	 */
 	if (smfAccessClient(&data->work, MILTER_NAME "-connect:", data->client_name, data->client_addr, NULL, &value) != SMDB_ACCESS_NOT_FOUND) {
 		rc = addBccRecipient(data, value, &nullPath);
+		if (data->flags & FLAG_SKIPALL_MESSAGE) {
+			/* addBccRecipient not aware of state, so we move the flag. */
+			data->flags &= ~FLAG_SKIPALL_MESSAGE;
+			data->flags |= FLAG_SKIPALL_CONNECT;
+		}
 		free(value);
 	}
 
@@ -305,6 +321,9 @@ filterMail(SMFICTX *ctx, char **args)
 
 	if ((data->work.qid = smfi_getsymval(ctx, "i")) == NULL)
 		data->work.qid = smfNoQueue;
+
+	/* Clear per message flags. */
+	data->flags &= ~FLAG_SKIPALL_MESSAGE;
 
 	/* Remove the per message recipients from the list. */
 	VectorRemoveSome(data->addRcpts, data->addRcptsConnect, VectorLength(data->addRcpts) - data->addRcptsConnect);
