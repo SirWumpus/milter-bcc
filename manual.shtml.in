@@ -244,9 +244,34 @@ arguments respectively.
 <p>
 Note that the<i class="syntax">flist</i> can be replaced by the SKIP action (equivalent to an empty <i class="syntax">flist</i>),
 which stops a lookup prematurely without returning a result. This can be useful to
-stop a lookup sequence early for special cases before it matches a more case later
+stop a lookup sequence early for special cases before it matches a more generic case later
 in the lookup sequence.
 </p>
+<p>
+The <i class="syntax">flist</i> can also be replaced by the SKIPALL action.
+This will behave just like SKIP for the current lookup and SKIP all other
+lookups to follow. An example:
+</p>
+<blockquote>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr class="syntax" valign="top">
+	<td width="40%" class="tline">@PACKAGE_NAME@-Connect:192.0.2.200</td>
+	<td width="60%" class="tline" style="text-align: right;">SKIPALL</td>
+</tr>
+<tr class="syntax" valign="top">
+	<td width="40%">@PACKAGE_NAME@-To:domain.com</td>
+	<td width="60%" style="text-align: right;">%T%P@archiving.%D</td>
+</tr>
+<tr><td colspan="2">&nbsp;</td></tr>
+<tr class="normal">
+	<td colspan="2">
+		 Do not archive mail from 192.0.2.200, regardless of other rules.
+	</td>
+</tr>
+<tr><td colspan="2" class="bline">&nbsp;</td></tr>
+</table>
+</blockquote>
+
 
 <!-- format-path string description -->
 <p>
