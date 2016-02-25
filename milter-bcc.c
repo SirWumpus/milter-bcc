@@ -245,7 +245,6 @@ filterOpen(SMFICTX *ctx, char *client_name, _SOCK_ADDR *raw_client_addr)
 	smfLog(SMF_LOG_TRACE, TAG_FORMAT "filterOpen(%lx, '%s', [%s])", TAG_ARGS, (long) ctx, client_name, data->client_addr);
 
 	data->line[0] = '\0';
-	data->work.replyLine[0] = '\0';
 
 	if ((data->addRcpts = VectorCreate(10)) == NULL)
 		goto error1;
