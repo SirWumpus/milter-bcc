@@ -272,7 +272,7 @@ int main()
 
 AC_DEFUN(SNERT_OPTION_DB_185,[
 	AC_ARG_ENABLE(db-185
-		[AC_HELP_STRING([[--enable-db-185 ]],[link with DB 1.85])]
+		[AS_HELP_STRING([[--enable-db-185 ]],[link with DB 1.85])]
 	)
 ])
 
@@ -677,23 +677,39 @@ AC_DEFUN(SNERT_OPTION_ENABLE_DEBUG,[
 	dnl annoying when you want the default to no debugging.
 	CFLAGS="${CFLAGS}"
 
-	AC_ARG_ENABLE(debug,
-		[AC_HELP_STRING([--enable-debug ],[enable compiler debug option])],
-		[
-			if test ${enable_debug:-no} = 'yes' ; then
-				AC_DEFINE_UNQUOTED(LIBSNERT_DEBUG)
-				enable_debug='yes'
-			fi
-		],[
-			AC_DEFINE_UNQUOTED(NDEBUG)
-			enable_debug='no'
-		]
-	)
+	AC_ARG_ENABLE(debug, [AS_HELP_STRING([--enable-debug ],[enable compiler debug option])])
+	AS_IF([test ${enable_debug:-no} = 'yes'],[
+		AC_DEFINE_UNQUOTED(LIBSNERT_DEBUG)
+	],[
+		AC_DEFINE(NDEBUG,[1],[Disable debug code])
+		enable_debug='no'
+	])
 ])
+
+dnl
+dnl SNERT_OPTION_ENABLE_DEBUG
+dnl
+AC_DEFUN(SNERT_OPTION_ENABLE_DEBUG,[
+	dnl Assert that CFLAGS is defined. When AC_PROC_CC is called to
+	dnl check the compiler and CC == gcc is found and CFLAGS is
+	dnl undefined, then it gets assigned "-g -O2", which is just
+	dnl annoying when you want the default to no debugging.
+	CFLAGS="${CFLAGS}"
+
+	AC_ARG_ENABLE(debug,[AS_HELP_STRING([--enable-debug],[enable compiler debug option])])
+	AS_IF([test ${enable_debug:-no} = 'yes'],[
+		CFLAGS="-g -O0${CFLAGS:+ $CFLAGS}"
+	],[
+		AC_DEFINE(NDEBUG,[1],[Disable debug code])
+		CFLAGS="-Os${CFLAGS:+ $CFLAGS}"
+		enable_debug='no'
+	])
+])
+
 
 AC_DEFUN(SNERT_OPTION_ENABLE_64BIT,[
 	AC_ARG_ENABLE(64bit,
-		[AC_HELP_STRING([--enable-64bit ],[enable compile & link options for 64-bit])],
+		[AS_HELP_STRING([--enable-64bit ],[enable compile & link options for 64-bit])],
 		[
 			CFLAGS="-m64 ${CFLAGS}"
 			LDFLAGS="-m64 ${LDFLAGS}"
@@ -718,7 +734,7 @@ dnl SNERT_OPTION_ENABLE_WIN32
 dnl
 AC_DEFUN(SNERT_OPTION_ENABLE_MINGW,[
 	AC_ARG_ENABLE(mingw,
-		[AC_HELP_STRING([--enable-mingw ],[generate native Windows application using mingw])],
+		[AS_HELP_STRING([--enable-mingw ],[generate native Windows application using mingw])],
 		[
 			enable_win32='yes'
 			AC_SUBST(ENABLE_MINGW, 'yes')
@@ -733,7 +749,7 @@ dnl SNERT_OPTION_WITH_WINDOWS_SDK
 dnl
 AC_DEFUN(SNERT_OPTION_WITH_WINDOWS_SDK,[
 	AC_ARG_WITH(windows-sdk,
-		[AC_HELP_STRING([--with-windows-sdk=dir ],[Windows Platform SDK base directory])],
+		[AS_HELP_STRING([--with-windows-sdk=dir ],[Windows Platform SDK base directory])],
 		[
 			enable_win32='yes'
 			AC_SUBST(WITH_WINDOWS_SDK, $with_windows_sdk)
@@ -749,7 +765,7 @@ dnl SNERT_OPTION_ENABLE_BCC32
 dnl
 AC_DEFUN(SNERT_OPTION_ENABLE_BCC32,[
 	AC_ARG_ENABLE(bcc32,
-		[AC_HELP_STRING([--enable-bcc32 ],[generate native Windows application using Borland C++ 5.5])],
+		[AS_HELP_STRING([--enable-bcc32 ],[generate native Windows application using Borland C++ 5.5])],
 		[
 			enable_bcc32='yes'
 			CC=bcc32
@@ -762,7 +778,7 @@ dnl SNERT_OPTION_ENABLE_RUN_USER(default_user_name)
 dnl
 AC_DEFUN(SNERT_OPTION_ENABLE_RUN_USER,[
 	AC_ARG_ENABLE(run-user,
-		[AC_HELP_STRING([--enable-run-user=user ],[specifiy the process user name, default is "$1"])],
+		[AS_HELP_STRING([--enable-run-user=user ],[specifiy the process user name, default is "$1"])],
 		[enable_run_user="$enableval"], [enable_run_user=$1]
 	)
 	AC_DEFINE_UNQUOTED(RUN_AS_USER, ["$enable_run_user"])
@@ -774,7 +790,7 @@ dnl SNERT_OPTION_ENABLE_RUN_GROUP(default_group_name)
 dnl
 AC_DEFUN(SNERT_OPTION_ENABLE_RUN_GROUP,[
 	AC_ARG_ENABLE(run-group,
-		[AC_HELP_STRING([--enable-run-group=group ],[specifiy the process group name, default is "$1"])],
+		[AS_HELP_STRING([--enable-run-group=group ],[specifiy the process group name, default is "$1"])],
 		[enable_run_group="$enableval"], [enable_run_group=$1]
 	)
 	AC_DEFINE_UNQUOTED(RUN_AS_GROUP, ["$enable_run_group"])
@@ -786,7 +802,7 @@ dnl SNERT_OPTION_ENABLE_CACHE_TYPE(default_cache_type)
 dnl
 AC_DEFUN(SNERT_OPTION_ENABLE_CACHE_TYPE,[
 	AC_ARG_ENABLE(cache-type,
-		[AC_HELP_STRING([--enable-cache-type=type ],[specifiy the cache type: bdb, flatfile, hash])],
+		[AS_HELP_STRING([--enable-cache-type=type ],[specifiy the cache type: bdb, flatfile, hash])],
 		[
 			# Force a specific type.
 			case "$enableval" in
@@ -809,7 +825,7 @@ dnl SNERT_OPTION_ENABLE_CACHE_FILE
 dnl
 AC_DEFUN(SNERT_OPTION_ENABLE_CACHE_FILE,[
 	AC_ARG_ENABLE(cache-file,
-		[AC_HELP_STRING([--enable-cache-file=filepath ],[specifiy the cache file])],
+		[AS_HELP_STRING([--enable-cache-file=filepath ],[specifiy the cache file])],
 		[
 			enable_cache_file="$enableval"
 		], [
@@ -837,7 +853,7 @@ dnl SNERT_OPTION_ENABLE_PID(default)
 dnl
 AC_DEFUN(SNERT_OPTION_ENABLE_PID,[
 	AC_ARG_ENABLE(pid,
-		[AC_HELP_STRING([--enable-pid=filepath ],[specifiy an alternative pid file path])],
+		[AS_HELP_STRING([--enable-pid=filepath ],[specifiy an alternative pid file path])],
 		[
 		],[
 			dnl Almost all unix machines agree on this location.
@@ -859,7 +875,7 @@ dnl SNERT_OPTION_ENABLE_SOCKET(default)
 dnl
 AC_DEFUN(SNERT_OPTION_ENABLE_SOCKET,[
 	AC_ARG_ENABLE(socket,
-		[AC_HELP_STRING([--enable-socket=filepath ],[specifiy an alternative Unix domain socket])],
+		[AS_HELP_STRING([--enable-socket=filepath ],[specifiy an alternative Unix domain socket])],
 		[
 		],[
 			dnl Almost all unix machines agree on this location.
@@ -884,7 +900,7 @@ dnl SNERT_OPTION_ENABLE_POPAUTH
 dnl
 AC_DEFUN(SNERT_OPTION_ENABLE_POPAUTH,[
 	AC_ARG_ENABLE(popauth,
-		[AC_HELP_STRING([--enable-popauth ],[enable POP-before-SMTP macro checking in smf API])],
+		[AS_HELP_STRING([--enable-popauth ],[enable POP-before-SMTP macro checking in smf API])],
 		[AC_DEFINE_UNQUOTED(HAVE_POP_BEFORE_SMTP)]
 	)
 ])
@@ -894,7 +910,7 @@ dnl SNERT_OPTION_ENABLE_STARTUP_DIR
 dnl
 AC_DEFUN(SNERT_OPTION_ENABLE_STARTUP_DIR,[
 	AC_ARG_ENABLE(startup-dir,
-		[AC_HELP_STRING([--enable-startup-dir=dir ],[specifiy the startup script directory location])],
+		[AS_HELP_STRING([--enable-startup-dir=dir ],[specifiy the startup script directory location])],
 		[
 			STARTUP_DIR="$enableval"
 			STARTUP_EXT='.sh'
@@ -926,7 +942,7 @@ dnl SNERT_OPTION_WITH_SENDMAIL
 dnl
 AC_DEFUN(SNERT_OPTION_WITH_SENDMAIL,[
 	AC_ARG_WITH(sendmail,
-		[AC_HELP_STRING([--with-sendmail=dir ],[directory where sendmail.cf lives, default /etc/mail])],
+		[AS_HELP_STRING([--with-sendmail=dir ],[directory where sendmail.cf lives, default /etc/mail])],
 		[with_sendmail="$withval"], [with_sendmail='/etc/mail']
 	)
 	AC_SUBST(with_sendmail)
@@ -937,7 +953,7 @@ dnl SNERT_OPTION_ENABLE_FORK
 dnl
 AC_DEFUN(SNERT_OPTION_ENABLE_FORK,[
 	AC_ARG_ENABLE(
-		fork, [AC_HELP_STRING([--enable-fork],[use process fork model instead of threads])],
+		fork, [AS_HELP_STRING([--enable-fork],[use process fork model instead of threads])],
 		[
 			AC_DEFINE_UNQUOTED(ENABLE_FORK)
 		]
@@ -967,7 +983,7 @@ dnl SNERT_OPTION_ENABLE_FCNTL_LOCKS
 dnl
 AC_DEFUN(SNERT_OPTION_ENABLE_FCNTL_LOCKS,[
 	AC_ARG_ENABLE(fcntl-locks,
-		[AC_HELP_STRING([--enable-fcntl-locks],[use fcntl() file locking instead of flock()])],
+		[AS_HELP_STRING([--enable-fcntl-locks],[use fcntl() file locking instead of flock()])],
 		[
 		],[
 			dnl Option not specified, choose based on OS.
