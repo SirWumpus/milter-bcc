@@ -567,8 +567,6 @@ atExitCleanUp()
 int
 main(int argc, char **argv)
 {
-	int argi;
-
 	/* Define defaults. */
 	smfOptFile.initial = MILTER_CF;
 	smfOptPidFile.initial = PID_FILE;
@@ -579,7 +577,7 @@ main(int argc, char **argv)
 
 	/* Parse command line options looking for a file= option. */
 	optionInit(optTable, smfOptTable, NULL);
-	argi = optionArrayL(argc, argv, optTable, smfOptTable, NULL);
+	(void) optionArrayL(argc, argv, optTable, smfOptTable, NULL);
 
 	/* Parse the option file followed by the command line options again. */
 	if (smfOptFile.string != NULL && *smfOptFile.string != '\0') {
