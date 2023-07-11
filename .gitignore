@@ -33,3 +33,5 @@ sample.mc
 startup.sh
 config.h
 experimental/*
+configure.lineno
+configure~

@@ -1,0 +1,23 @@
+*.p4 linguist-language=Forth
+*.blk binary
+*.docx binary
+*.gif binary
+*.jbf binary
+*.jpg binary
+*.mng binary
+*.odp binary
+*.pdf binary
+*.png binary
+*.psp binary
+*.ttf binary
+*.TTF binary
+*.wsa binary
+config.guess -diff -merge
+config.sub -diff -merge
+configure -diff -merge linguist-generated
+makefile linguist-generated
+reference/** linguist-documentation
+docs/** linguist-documentation
+doc/** linguist-documentation
+*.html linguist-documentation
+*.shtml linguist-documentation
